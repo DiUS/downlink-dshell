@@ -25,5 +25,5 @@ build:
         - script:
             name: gemfury
             code: |
-                bundle exec gem build
-                curl -F package=@$(echo dshell*.gem) https://mUsqDZoRcMHT47aUCK75@push.fury.io/silarsis/
+                GEMNAME=gem build dshell.gemspec 2>&1 | grep File: | awk '{ print $2 }'
+                curl -F package=@$GEMNAME https://mUsqDZoRcMHT47aUCK75@push.fury.io/silarsis/
