@@ -11,21 +11,45 @@ Dshell do
   end
 
   help :ls, "Show the list of commands you've entered so far"
-  command :ls do |argv|
-    help "List files"
-    puts "listing for #{argv}"
+  command :ls do
+    puts `ls #{current_dir}`
+  end
+
+  help :cat, "Prints out the content of the specified files"
+  command :cat do |argv|
+    if argv.empty?
+      show_error "No file specified"
+    else
+      #FIXME: This will allow them to break out of the
+      # virtual filesystem.
+      argv = argv.map do |file|
+        [file, real_file_for(Pathname.new(file))]
+      end
+      argv.each do |name, file|
+        if file.exist?
+          puts `cat #{file}`
+        else
+          show_error(
+            "#{name}: No such file or directory"
+          )
+        end
+      end
+    end
   end
 
   help :cd, "Change directory"
   command :cd do |argv|
-    help "Change directory"
     change_dir argv.join(' ')
   end
 
   help :pwd, "Prints the current directory"
   command :pwd do |argv|
-    help "Prints the current directory"
-    puts virtual_dir_for current_dir
+    puts virtual_file_for current_dir
+  end
+
+  help :exit, "Logout of the system"
+  command :exit do |argv|
+    exit 0
   end
 
 end

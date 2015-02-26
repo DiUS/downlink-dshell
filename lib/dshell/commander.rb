@@ -13,6 +13,7 @@ module Dshell
 
       instance_eval(&block)
 
+      help :help, "Show help"
       command :help do |argv|
         if argv.empty?
           show_help
@@ -24,8 +25,12 @@ module Dshell
       self
     end
 
+    def show_error message
+      puts "\033[31m#{message}\033[0m"
+    end
+
     def change_dir dir
-      dir = Pathname.new(File.expand_path(dir, @current_dir))
+      dir = real_file_for dir
       begin
         dir = dir.realpath
         dir = ROOT unless dir.to_s.start_with?(ROOT.to_s)
@@ -33,14 +38,22 @@ module Dshell
         not_found = true
       end
       if not_found
-        puts "No directory #{virtual_dir_for dir}"
+        show_error "No directory #{virtual_file_for dir}"
       else
         @current_dir = dir
       end
     end
 
-    def virtual_dir_for dir
-      dir.to_s.gsub(/^#{ROOT}\/?/, '/')
+    def virtual_file_for file
+      file.to_s.gsub(/^#{ROOT}\/?/, '/')
+    end
+
+    def real_file_for file
+      if file.absolute?
+        ROOT.join(file.to_s.gsub(/^\//,''))
+      else
+        Pathname.new(File.expand_path(file, current_dir))
+      end
     end
 
     def allow *commands
@@ -50,7 +63,7 @@ module Dshell
     def listen
       show_instructions
       while true do
-        print  "#{virtual_dir_for current_dir}> "
+        print "#{virtual_file_for current_dir}> "
         input = STDIN.readline
         name, *argv = input.chomp.split(' ')
         name = name.to_sym
@@ -96,7 +109,7 @@ module Dshell
     end
 
     def no_command(name)
-      puts "No command #{name}"
+      show_error "No command #{name}"
     end
 
     def show_help
@@ -111,7 +124,7 @@ module Dshell
         if @command_help[name]
           puts "#{name}: #{@command_help[name]}"
         else
-          puts "No help for #{name}"
+          show_error "No help for #{name}"
         end
       else
         no_command name
