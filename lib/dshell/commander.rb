@@ -1,13 +1,13 @@
 module Dshell
   class Commander
-    ROOT = Pathname.new('/tmp/downlink').realpath
 
-    attr_reader :whitelist, :commands, :current_dir
+    attr_reader :whitelist, :commands, :current_dir, :root, :config
 
     def initialize &block
+      load_config
       @commands = {}
       @whitelist = []
-      @current_dir = ROOT
+      @current_dir = root
       @command_help = {}
 
       instance_eval(&block)
@@ -36,7 +36,7 @@ module Dshell
       dir = real_file_for dir
       begin
         dir = dir.realpath
-        dir = ROOT unless dir.to_s.start_with?(ROOT.to_s)
+        dir = root unless dir.to_s.start_with?(root.to_s)
       rescue Errno::ENOENT
         not_found = true
       end
@@ -48,13 +48,13 @@ module Dshell
     end
 
     def virtual_file_for file
-      file.to_s.gsub(/^#{ROOT}\/?/, '/')
+      file.to_s.gsub(/^#{root}\/?/, '/')
     end
 
     def real_file_for file
       file = Pathname.new file
       if file.absolute?
-        ROOT.join(file.to_s.gsub(/^\//,''))
+        root.join(file.to_s.gsub(/^\//,''))
       else
         Pathname.new(File.expand_path(file, current_dir))
       end
@@ -64,7 +64,21 @@ module Dshell
       whitelist.concat(commands.map(&:to_sym))
     end
 
+    def run
+      login and listen
+    end
+
+    def login
+      ok = true
+      ok = check_authentication if has_authentication?
+      unless ok
+        show_error "Invalid username or password"
+      end
+      ok
+    end
+
     def listen
+      show_motd
       show_instructions
       while true do
         input = Readline.readline(prompt, true)
@@ -143,6 +157,10 @@ module Dshell
       puts @instructions
     end
 
+    def show_motd
+      puts config['motd'] if config['motd']
+    end
+
     def show_history
       puts Readline::HISTORY.to_a
     end
@@ -155,6 +173,33 @@ module Dshell
       allowed_commands.select do |comm|
         comm.to_s.start_with? current
       end
+    end
+
+    def load_config
+      @config = YAML.load(File.read '/etc/downlink/config.yml') || {}
+      @root ||= Pathname.new(
+        config.fetch('rootfs', '/var/downlink')
+      ).realpath
+    end
+
+    def username
+      config['username']
+    end
+
+    def password
+      config['password']
+    end
+
+    def has_authentication?
+      username and password
+    end
+
+    def check_authentication
+      print 'username: '
+      given_username = STDIN.readline.chomp
+      print 'password: '
+      given_password = STDIN.readline.chomp
+      given_username == username and given_password == password
     end
 
   end

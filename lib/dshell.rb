@@ -1,4 +1,6 @@
 require 'readline'
+require 'pathname'
+require 'yaml'
 
 require "dshell/version"
 require "dshell/commander"
@@ -7,5 +9,5 @@ module Dshell
 end
 
 def Dshell(&block)
-  Dshell::Commander.new(&block).listen
+  Dshell::Commander.new(&block).run
 end
