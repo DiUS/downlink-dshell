@@ -23,7 +23,7 @@ Dshell do
       #FIXME: This will allow them to break out of the
       # virtual filesystem.
       argv = argv.map do |file|
-        [file, Pathname.new(File.expand_path(file, current_dir))]
+        [file, real_file_for(Pathname.new(file))]
       end
       argv.each do |name, file|
         if file.exist?
@@ -45,6 +45,11 @@ Dshell do
   help :pwd, "Prints the current directory"
   command :pwd do |argv|
     puts virtual_file_for current_dir
+  end
+
+  help :exit, "Logout of the system"
+  command :exit do |argv|
+    exit 0
   end
 
 end
