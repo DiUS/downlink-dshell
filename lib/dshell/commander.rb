@@ -21,6 +21,10 @@ module Dshell
         end
       end
 
+      Readline.completion_proc = -> (current) do
+        completion_for current
+      end
+
       self
     end
 
@@ -120,7 +124,7 @@ module Dshell
       puts "type 'help <command name>' for help on particular command"
     end
 
-    def show_help_for_command name
+    def show_help_for_command(name)
       name = name.to_sym
       if allowed_command? name
         if @command_help[name]
@@ -141,8 +145,14 @@ module Dshell
       puts Readline::HISTORY.to_a
     end
 
-    def add_to_history input
+    def add_to_history(input)
       Readline::HISTORY.push input
+    end
+
+    def completion_for(current)
+      allowed_commands.select do |comm|
+        comm.to_s.start_with? current
+      end
     end
 
   end
