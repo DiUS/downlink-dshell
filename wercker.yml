@@ -26,4 +26,4 @@ build:
             name: gemfury
             code: |
                 GEMNAME=gem build dshell.gemspec 2>&1 | grep File: | awk '{ print $2 }'
-                curl -F package=@$GEMNAME https://mUsqDZoRcMHT47aUCK75@push.fury.io/silarsis/
+                curl -F package=@$GEMNAME https://mUsqDZoRcMHT47aUCK75@push.fury.io/silarsis/ ||:
