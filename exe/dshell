@@ -7,7 +7,7 @@ Dshell do
 
   help :history, "Show the list of commands you've entered so far"
   command :history do
-    puts history
+    show_history
   end
 
   help :ls, "Show the list of commands you've entered so far"
@@ -51,5 +51,7 @@ Dshell do
   command :exit do |argv|
     exit 0
   end
+
+  #add_to_history 'stuff'
 
 end

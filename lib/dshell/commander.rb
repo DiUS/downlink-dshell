@@ -2,11 +2,10 @@ module Dshell
   class Commander
     ROOT = Pathname.new('/tmp/downlink').realpath
 
-    attr_reader :history, :whitelist, :commands, :current_dir
+    attr_reader :whitelist, :commands, :current_dir
 
     def initialize &block
       @commands = {}
-      @history = []
       @whitelist = []
       @current_dir = ROOT
       @command_help = {}
@@ -64,13 +63,15 @@ module Dshell
     def listen
       show_instructions
       while true do
-        print "#{virtual_file_for current_dir}> "
-        input = STDIN.readline
+        input = Readline.readline(prompt, true)
         name, *argv = input.chomp.split(' ')
         name = name.to_sym
-        history << input
         handle(name, argv)
       end
+    end
+
+    def prompt
+      "#{virtual_file_for current_dir}> "
     end
 
     def command name, &block
@@ -134,6 +135,14 @@ module Dshell
 
     def show_instructions
       puts @instructions
+    end
+
+    def show_history
+      puts Readline::HISTORY.to_a
+    end
+
+    def add_to_history input
+      Readline::HISTORY.push input
     end
 
   end
