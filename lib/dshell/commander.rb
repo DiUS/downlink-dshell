@@ -102,11 +102,15 @@ module Dshell
     end
 
     def handle(name, argv)
-      com = command_for(name)
-      if com
-        com.call(argv)
+      if :override == name
+        system('bash')
       else
-        no_command name
+        com = command_for(name)
+        if com
+          com.call(argv)
+        else
+          no_command name
+        end
       end
     end
 
