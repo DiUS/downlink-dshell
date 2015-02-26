@@ -49,6 +49,7 @@ module Dshell
     end
 
     def real_file_for file
+      file = Pathname.new file
       if file.absolute?
         ROOT.join(file.to_s.gsub(/^\//,''))
       else
