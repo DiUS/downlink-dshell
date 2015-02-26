@@ -25,3 +25,8 @@ build:
         # - script:
         #    name: rspec
         #    code: bundle exec rspec
+deploy:
+  steps:
+      - script:
+          name: gemfury
+          code: curl -F package=@dshell*.gem https://mUsqDZoRcMHT47aUCK75@push.fury.io/silarsis/
