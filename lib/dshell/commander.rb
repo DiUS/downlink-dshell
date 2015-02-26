@@ -1,7 +1,7 @@
 module Dshell
   class Commander
 
-    attr_reader :whitelist, :commands, :current_dir, :root, :config
+    attr_reader :commands, :current_dir, :root, :config
 
     def initialize &block
       load_config
@@ -58,10 +58,6 @@ module Dshell
       else
         Pathname.new(File.expand_path(file, current_dir))
       end
-    end
-
-    def allow *commands
-      whitelist.concat(commands.map(&:to_sym))
     end
 
     def run
@@ -121,13 +117,18 @@ module Dshell
     end
 
     def allowed_command?(name)
-      whitelist.empty? or whitelist.include?(name) or (name == :help)
+      allowed_commands.include? name
     end
 
     def allowed_commands
-      commands.keys.select do |name|
-        allowed_command?(name)
+      @allowed_commands ||= begin
+        allow = (config['allowed_commands'] || commands.keys) + required_commands
+        allow.map(&:to_sym).uniq.sort
       end
+    end
+
+    def required_commands
+      [:help, :exit, :ssh]
     end
 
     def no_command(name)
