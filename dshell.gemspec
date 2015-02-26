@@ -9,12 +9,8 @@ Gem::Specification.new do |spec|
   spec.authors       = ["Sergei Matheson"]
   spec.email         = ["sergei.matheson@gmail.com"]
 
-  if spec.respond_to?(:metadata)
-    spec.metadata['allowed_push_host'] = "TODO: Set to 'http://mygemserver.com' to prevent pushes to rubygems.org, or delete to allow pushes to any server."
-  end
-
-  spec.summary       = %q{TODO: Write a short summary, because Rubygems requires one.}
-  spec.description   = %q{TODO: Write a longer description or delete this line.}
+  spec.summary       = %q{fake shell for downlink game}
+  spec.description   = %q{fake shell for downlink game}
   spec.homepage      = "TODO: Put your gem's website or public repo URL here."
   spec.license       = "MIT"
 
