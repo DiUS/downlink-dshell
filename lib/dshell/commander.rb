@@ -13,6 +13,7 @@ module Dshell
 
       instance_eval(&block)
 
+      help :help, "Show help"
       command :help do |argv|
         if argv.empty?
           show_help
@@ -24,6 +25,10 @@ module Dshell
       self
     end
 
+    def show_error message
+      puts message
+    end
+
     def change_dir dir
       dir = Pathname.new(File.expand_path(dir, @current_dir))
       begin
@@ -33,13 +38,13 @@ module Dshell
         not_found = true
       end
       if not_found
-        puts "No directory #{virtual_dir_for dir}"
+        puts "No directory #{virtual_file_for dir}"
       else
         @current_dir = dir
       end
     end
 
-    def virtual_dir_for dir
+    def virtual_file_for dir
       dir.to_s.gsub(/^#{ROOT}\/?/, '/')
     end
 
@@ -50,7 +55,7 @@ module Dshell
     def listen
       show_instructions
       while true do
-        print  "#{virtual_dir_for current_dir}> "
+        print "#{virtual_file_for current_dir}> "
         input = STDIN.readline
         name, *argv = input.chomp.split(' ')
         name = name.to_sym
