@@ -29,4 +29,4 @@ deploy:
   steps:
       - script:
           name: gemfury
-          code: curl -F package=@dshell*.gem https://mUsqDZoRcMHT47aUCK75@push.fury.io/silarsis/
+          code: curl -F package=@$(echo dshell*.gem) https://mUsqDZoRcMHT47aUCK75@push.fury.io/silarsis/
