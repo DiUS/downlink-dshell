@@ -77,12 +77,10 @@ module Dshell
       show_motd
       show_instructions
       while true do
-        input = Readline.readline(prompt, true)
-        unless input.nil?
-          name, *argv = input.chomp.split(' ')
-          name = name.to_sym
-          handle(name, argv)
-        end
+        input = Readline.readline(prompt, true) || 'exit'
+        name, *argv = input.chomp.split(' ')
+        name = name.to_s.to_sym
+        handle(name, argv)
       end
     end
 
