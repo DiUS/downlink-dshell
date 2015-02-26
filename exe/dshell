@@ -2,24 +2,30 @@
 
 require "dshell"
 
-module Dshell
+Dshell do
+  instructions "Type 'help' for help"
 
-  ROOT="/tmp/downlink"
-
-  commander = Commander.new do
-    motd "Welcome to downlink"
-
-    command :ls do |argv|
-      puts "listing for #{argv}"
-    end
-
-    command :history do
-      puts history
-    end
-
-    allow :ls
-
+  help :history, "Show the list of commands you've entered so far"
+  command :history do
+    puts history
   end
 
-  commander.listen
+  help :ls, "Show the list of commands you've entered so far"
+  command :ls do |argv|
+    help "List files"
+    puts "listing for #{argv}"
+  end
+
+  help :cd, "Change directory"
+  command :cd do |argv|
+    help "Change directory"
+    change_dir argv.join(' ')
+  end
+
+  help :pwd, "Prints the current directory"
+  command :pwd do |argv|
+    help "Prints the current directory"
+    puts virtual_dir_for current_dir
+  end
+
 end
