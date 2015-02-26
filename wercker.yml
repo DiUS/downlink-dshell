@@ -21,12 +21,9 @@ build:
                 echo "from location $(which ruby)"
                 echo -p "gem list: $(gem list)"
 
-        # Add more steps here:
-        # - script:
-        #    name: rspec
-        #    code: bundle exec rspec
-deploy:
-  steps:
-      - script:
-          name: gemfury
-          code: curl -F package=@$(echo dshell*.gem) https://mUsqDZoRcMHT47aUCK75@push.fury.io/silarsis/
+        - bundle-package
+        - script:
+            name: gemfury
+            code: |
+                bundle exec gem build
+                curl -F package=@$(echo dshell*.gem) https://mUsqDZoRcMHT47aUCK75@push.fury.io/silarsis/
