@@ -1,3 +1,25 @@
 #!/usr/bin/env ruby
 
 require "dshell"
+
+module Dshell
+
+  ROOT="/tmp/downlink"
+
+  commander = Commander.new do
+    motd "Welcome to downlink"
+
+    command :ls do |argv|
+      puts "listing for #{argv}"
+    end
+
+    command :history do
+      puts history
+    end
+
+    allow :ls
+
+  end
+
+  commander.listen
+end
