@@ -52,6 +52,16 @@ Dshell do
     exit 0
   end
 
+  help :ssh, "Connect to another server"
+  command :ssh do |argv|
+    if argv.empty?
+      show_error "No server specified"
+    else
+      host = argv.first
+      system('ssh', host)
+    end
+  end
+
   #add_to_history 'stuff'
 
 end
